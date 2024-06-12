@@ -1,0 +1,137 @@
+
+Create table Student 
+(
+Snum int Primary Key,
+Sname varchar(20),
+Major varchar(10), 
+Lev varchar(10),
+age int
+);
+
+Create table Faculty
+(
+Fid int Primary Key,
+Fname varchar(20),
+Depid int
+);
+
+Create table Class
+(
+Cname varchar(20) Primary Key, 
+Meets_at varchar(20),
+Room varchar(20),
+Fid references  Faculty(Fid) on delete set NULL
+);
+
+Create table Enrolled 
+(
+Snum references Student(Snum),
+Cname references Class(Cname),
+Primary key(Snum,Cname)
+);
+Insert into Student values(1,'ANDY','CSE','JR',24);
+Insert into Student values(2,'HELEN','ARTS','JR',22);
+Insert into Student values(3,'BOB','PSYCHOLOGY','SP',24);
+Insert into Student values(4,'ANKITH','HISTORY','SR',22);
+Insert into Student values(5,'AARTI','CSE','SR',23);
+Insert into Student values(6,'ABHISHEK','CSE','JR',25);
+Insert into Student values(7,'TARA','ARTS','JR',22);
+
+
+
+Insert into Faculty values(22,'SUSHMA',88);
+Insert into Faculty values(23,'HARSHITH',77);
+Insert into Faculty values(24,'RAVI',33);
+Insert into Faculty values(27,'VIGNESH',66);
+Insert into Faculty values(31,'KOMAL',44);
+Insert into Faculty values(34,'PUNEETH',55);
+Insert into Faculty values(36,'RAKESH',22);
+
+Insert into Class values ('HIS38','12:00','R123',34);
+Insert into Class values ('CS293','12:00','R124',23);
+Insert into Class values ('CS262','2:00','R125',24);
+Insert into Class values ('PY331','9:00','R126',27);
+Insert into Class values ('AR32','9:00','R127',36);
+Insert into Class values ('AR36','10:00','R128',31);
+Insert into Class values ('PY332','8:00','R128',22);
+Insert into Class values ('HIS37','5:00','R128',34);
+Insert into Class values ('HIS34','4:00','R128',31);
+Insert into Class values ('CS289','2:00','R128',22);
+
+
+Insert into Enrolled values(1,'CS262');
+Insert into Enrolled values(1,'AR32');
+Insert into Enrolled values(2,'AR32');
+Insert into Enrolled values(2,'PY331');
+Insert into Enrolled values(3,'PY331');
+Insert into Enrolled values(3,'HIS34');
+Insert into Enrolled values(4,'HIS38');
+Insert into Enrolled values(5,'CS293');
+Insert into Enrolled values(5,'HIS38');
+Insert into Enrolled values(6,'CS262');
+
+
+
+
+
+
+select * from student;
+select * from faculty;
+select * from class;
+select * from enrolled;
+
+
+
+
+QUERIES:
+
+a)
+
+select distinct s.sname
+from Student s, Faculty f, Class c, Enrolled e
+where s.snum=e.snum and
+c.cname = e.cname and
+f.fid=c.fid and
+f.fname='Rakesh' and
+s.lev='JR'
+orderby s.snum;
+
+
+b)
+select max (s.age)as age 
+from student s
+where(s.major='history')or (select e.snum 
+from class c,enrolled e,faculty f
+where c.cname =f.cname and f.fid=c.fid and
+f.fname='ravi');
+
+
+c)
+select distinct s.sname
+from student s
+where s.snum in (select e1.snum
+from enrolled e1,enrolled e2,class c1,class c2
+where e1.snum=e2.snum and 
+e1.cname=e2.cname and 
+e1.cname =c1.cname and
+e2.cname =c2.cname and 
+c1.meets_at=c2.meets_at);
+
+d)
+select f.fname count(*) as coursecount
+from faculty f, class c 
+where c.fid not in (select f.fid
+from faculty f, enrolled e
+where (rooroom not in (select c.cname from class c 
+where room in (select room from class 
+where room='R128'))
+groupby f.fname;
+
+
+e)
+select lev,avg(age)
+from student
+group by lev;
+
+
+
